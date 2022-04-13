@@ -4,7 +4,8 @@ import re
 
 
 # notion settings
-ID_MAPPER = (r'(\d{4})\/', '\\1|')  # map / to | cause / not valid as file name
+ID_MAPPER = (r'(\d{4})\/', '\\1-')  # map / to - cause / not valid as file name
+ID_END_MAPPER = (r'(\d{4}):', '\\1')  # remove : because : is not allowed
 NOTION_URL = r'https:\/\/www.notion.so\/[a-z0-9]+'
 REFERENCE_STYLE = r'(\[\d[^\]\n]*\])(\([^\)]*\))'
 STATE_TAG_STYLE = r'(state:\s)([a-z]+)'
@@ -43,7 +44,10 @@ def clean_note_ids(note):
     # I used slash in notion to create unique sequential note ids. But
     # slash can't be used as file names and therefore as markdown
     # obsidian note names.
-    return re.sub(ID_MAPPER[0], ID_MAPPER[1], note)
+    note = re.sub(ID_MAPPER[0], ID_MAPPER[1], note)
+    # additionally : can not be used in file names and I used them between
+    # id and the note title
+    return re.sub(ID_END_MAPPER[0], ID_END_MAPPER[1], note)
 
 
 def map_links_to_connections(note, files):
